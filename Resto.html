@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Foodie - Best Restaurants</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    /* General Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f1f1f1;
+      color: #333;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 2rem;
+      background-color: #1E90FF;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    header .logo {
+      font-size: 2rem;
+      font-weight: 600;
+    }
+
+    header .search-bar {
+      flex: 1;
+      margin: 0 2rem;
+      max-width: 400px;
+    }
+
+    header .search-bar input {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1rem;
+      border-radius: 25px;
+      border: none;
+      outline: none;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    header .icons i {
+      font-size: 1.5rem;
+      margin: 0 1rem;
+      cursor: pointer;
+    }
+
+    /* Categories */
+    .categories {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      padding: 1.5rem;
+      background-color: white;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .categories button {
+      padding: 0.8rem 1.2rem;
+      background-color: #1E90FF;
+      color: white;
+      font-weight: 600;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1.1rem;
+    }
+
+    .categories button:hover {
+      background-color: #1565C0;
+      transform: translateY(-3px);
+    }
+
+    /* Restaurant Cards */
+    .restaurant-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      padding: 2rem;
+      margin-top: 2rem;
+    }
+
+    .restaurant-card {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+
+    .restaurant-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .restaurant-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+    }
+
+    .restaurant-card .details {
+      padding: 1.5rem;
+    }
+
+    .restaurant-card .details h3 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #1E90FF;
+    }
+
+    .restaurant-card .details p {
+      font-size: 1rem;
+      color: #777;
+      margin-top: 0.5rem;
+    }
+
+    .restaurant-card .details .rating {
+      font-size: 1.1rem;
+      color: #ffc107;
+      margin-top: 0.8rem;
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    .restaurant-card .details button {
+      background-color: #1E90FF;
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 25px;
+      margin-top: 1.5rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    .restaurant-card .details button:hover {
+      background-color: #1565C0;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      background-color: #1E90FF;
+      color: white;
+      margin-top: 3rem;
+      font-size: 1.1rem;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: white;
+      width: 80%;
+      max-width: 600px;
+      padding: 2rem;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .modal-content img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      font-size: 2rem;
+      cursor: pointer;
+    }
+
+    /* Hidden Class */
+    .hidden {
+      display: none;
+    }
+
+    /* Quantity Control */
+    .quantity {
+      margin: 1.5rem 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background-color: #f9f9f9;
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      margin-left: 1rem;
+    }
+
+    .quantity-controls button {
+      background-color: #1E90FF;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .quantity-controls button:hover {
+      background-color: #1565C0;
+    }
+
+    .quantity-controls input {
+      width: 50px;
+      text-align: center;
+      font-size: 1.2rem;
+      border: none;
+      background-color: transparent;
+      outline: none;
+      font-weight: bold;
+    }
+
+    #orderNowBtn {
+      background-color: #1E90FF;
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+      font-size: 1.1rem;
+      margin-top: 1rem;
+    }
+
+    #orderNowBtn:hover {
+      background-color: #1565C0;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .restaurant-list {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .categories {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .restaurant-card .details h3 {
+        font-size: 1.2rem;
+      }
+
+      .restaurant-card .details button {
+        font-size: 1rem;
+      }
+
+      .modal-content {
+        padding: 1.5rem;
+      }
+
+      footer {
+        font-size: 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .restaurant-list {
+        grid-template-columns: 1fr;
+      }
+
+      header .icons {
+        display: none;
+      }
+
+      .categories {
+        gap: 1rem;
+      }
+
+      .restaurant-card .details h3 {
+        font-size: 1rem;
+      }
+
+      .restaurant-card .details button {
+        padding: 0.7rem 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">Foodie</div>
+    <div class="search-bar">
+      <input type="text" placeholder="Search for restaurants, cuisines...">
+    </div>
+    <div class="icons">
+      <i class="fas fa-user"></i>
+      <i class="fas fa-heart"></i>
+      <i class="fas fa-shopping-cart"></i>
+    </div>
+  </header>
+
+  <section class="categories">
+    <button onclick="filterCuisine('fastFood')">Fast Food</button>
+    <button onclick="filterCuisine('vegan')">Vegan</button>
+    <button onclick="filterCuisine('chinese')">Chinese</button>
+    <button onclick="filterCuisine('italian')">Italian</button>
+    <button onclick="filterCuisine('healthy')">Healthy</button>
+    <button onclick="filterCuisine('desserts')">Desserts</button>
+  </section>
+
+  <section id="restaurant-list" class="restaurant-list">
+    <div class="restaurant-card fastFood">
+      <img src="https://source.unsplash.com/300x200/?burger" alt="Burger">
+      <div class="details">
+        <h3>Burger Palace</h3>
+        <p>Fast Food, American</p>
+        <span class="rating">★★★★☆ (120)</span>
+        <button class="order-btn" data-restaurant="Burger Palace" data-image="https://source.unsplash.com/300x200/?burger" data-recipe="Delicious American burger">Order Now</button>
+      </div>
+    </div>
+
+    <div class="restaurant-card fastFood">
+      <img src="https://source.unsplash.com/300x200/?fries" alt="Fries">
+      <div class="details">
+        <h3>Fry Heaven</h3>
+        <p>Fast Food, Sides</p>
+        <span class="rating">★★★★☆ (85)</span>
+        <button class="order-btn" data-restaurant="Fry Heaven" data-image="https://source.unsplash.com/300x200/?fries" data-recipe="Crispy golden fries">Order Now</button>
+      </div>
+    </div>
+
+    <div class="restaurant-card fastFood">
+      <img src="https://source.unsplash.com/300x200/?pizza" alt="Pizza">
+      <div class="details">
+        <h3>Pizza Plaza</h3>
+        <p>Fast Food, Italian</p>
+        <span class="rating">★★★★★ (200)</span>
+        <button class="order-btn" data-restaurant="Pizza Plaza" data-image="https://source.unsplash.com/300x200/?pizza" data-recipe="Cheesy Italian pizza">Order Now</button>
+      </div>
+    </div>
+
+    <div class="restaurant-card vegan">
+      <img src="https://source.unsplash.com/300x200/?salad" alt="Vegan Salad">
+      <div class="details">
+        <h3>Green Delight</h3>
+        <p>Vegan, Healthy</p>
+        <span class="rating">★★★★★ (80)</span>
+        <button class="order-btn" data-restaurant="Green Delight" data-image="https://source.unsplash.com/300x200/?salad" data-recipe="Fresh vegan salad with organic greens">Order Now</button>
+      </div>
+    </div>
+
+    <div class="restaurant-card vegan">
+      <img src="https://source.unsplash.com/300x200/?smoothie" alt="Vegan Smoothie">
+      <div class="details">
+        <h3>Smoothie Bowl</h3>
+        <p>Vegan, Healthy Drinks</p>
+        <span class="rating">★★★★★ (90)</span>
+        <button class="order-btn" data-restaurant="Smoothie Bowl" data-image="https://source.unsplash.com/300x200/?smoothie" data-recipe="Organic berry smoothie bowl">Order Now</button>
+      </div>
+    </div>
+
+    <div class="restaurant-card vegan">
+      <img src="https://source.unsplash.com/300x200/?vegan-pasta" alt="Vegan Pasta">
+      <div class="details">
+        <h3>Pasta Paradise</h3>
+        <p>Vegan, Italian</p>
+        <span class="rating">★★★★☆ (110)</span>
+        <button class="order-btn" data-restaurant="Pasta Paradise" data-image="https://source.unsplash.com/300x200/?vegan-pasta" data-recipe="Hearty vegan pasta">Order Now</button>
+      </div>
+    </div>
+
+    <div class="restaurant-card chinese">
+      <img src="https://source.unsplash.com/300x200/?dumplings" alt="Dumplings">
+      <div class="details">
+        <h3>Dragon's Feast</h3>
+        <p>Chinese, Dumplings</p>
+        <span class="rating">★★★★☆ (150)</span>
+        <button class="order-btn" data-restaurant="Dragon's Feast" data-image="https://source.unsplash.com/300x200/?dumplings" data-recipe="Traditional Chinese dumplings">Order Now</button>
+      </div>
+    </div>
+
+    <div class="restaurant-card chinese">
+      <img src="https://source.unsplash.com/300x200/?noodles" alt="Noodles">
+      <div class="details">
+        <h3>Noodle House</h3>
+        <p>Chinese, Noodles</p>
+        <span class="rating">★★★★★ (220)</span>
+        <button class="order-btn" data-restaurant="Noodle House" data-image="https://source.unsplash.com/300x200/?noodles" data-recipe="Classic Chinese noodles">Order Now</button>
+      </div>
+    </div>
+
+    <div class="restaurant-card chinese">
+      <img src="https://source.unsplash.com/300x200/?spring-rolls" alt="Spring Rolls">
+      <div class="details">
+        <h3>Rolls Delight</h3>
+        <p>Chinese, Appetizers</p>
+        <span class="rating">★★★★☆ (140)</span>
+        <button class="order-btn" data-restaurant="Rolls Delight" data-image="https://source.unsplash.com/300x200/?spring-rolls" data-recipe="Crispy spring rolls">Order Now</button>
+      </div>
+    </div>
+
+    <div class="restaurant-card italian">
+      <img src="https://source.unsplash.com/300x200/?pasta" alt="Pasta">
+      <div class="details">
+        <h3>Pasta Paradise</h3>
+        <p>Italian, Pasta</p>
+        <span class="rating">★★★★★ (180)</span>
+        <button class="order-btn" data-restaurant="Pasta Paradise" data-image="https://source.unsplash.com/300x200/?pasta" data-recipe="Classic Italian pasta with rich tomato sauce">Order Now</button>
+      </div>
+    </div>
+
+    <div class="restaurant-card italian">
+      <img src="https://source.unsplash.com/300x200/?pizza" alt="Pizza">
+      <div class="details">
+        <h3>Pizza Paradise</h3>
+        <p>Italian, Pizza</p>
+        <span class="rating">★★★★★ (180)</span>
+        <button class="order-btn" data-restaurant="Pizza Paradise" data-image="https://source.unsplash.com/300x200/?pizza" data-recipe="Authentic Italian pizza with fresh toppings">Order Now</button>
+      </div>
+    </div>
+
+    <div class="restaurant-card italian">
+      <img src="https://source.unsplash.com/300x200/?gnocchi" alt="Gnocchi">
+      <div class="details">
+        <h3>Gnocchi Paradise</h3>
+        <p>Italian, Gnocchi</p>
+        <span class="rating">★★★★★ (180)</span>
+        <button class="order-btn" data-restaurant="Gnocchi Paradise" data-image="https://source.unsplash.com/300x200/?gnocchi" data-recipe="Homemade Italian gnocchi with creamy sauce">Order Now</button>
+      </div>
+    </div>
+    
+    <div class="restaurant-card healthy">
+      <img src="https://source.unsplash.com/300x200/?caesar-salad" alt="Caesar Salad">
+      <div class="details">
+        <h3>Chicken Caesar Salad</h3>
+        <p>Healthy Food</p>
+        <span class="rating">★★★★★ (180)</span>
+        <button class="order-btn" data-restaurant="Chicken Caesar" data-image="https://source.unsplash.com/300x200/?caesar-salad" data-recipe="Fresh Caesar salad with grilled chicken">Order Now</button>
+      </div>
+    </div>
+    
+    <div class="restaurant-card healthy">
+      <img src="https://source.unsplash.com/300x200/?tuna-salad" alt="Tuna Salad">
+      <div class="details">
+        <h3>Tuna Pasta Salad</h3>
+        <p>Tuna Salad</p>
+        <span class="rating">★★★★★ (180)</span>
+        <button class="order-btn" data-restaurant="Tuna Salad" data-image="https://source.unsplash.com/300x200/?tuna-salad" data-recipe="Healthy tuna pasta salad with vegetables">Order Now</button>
+      </div>
+    </div>
+
+    <div class="restaurant-card healthy">
+      <img src="https://source.unsplash.com/300x200/?crab-salad" alt="Crab Salad">
+      <div class="details">
+        <h3>Crab Salad</h3>
+        <p>Crab Salad</p>
+        <span class="rating">★★★★★ (180)</span>
+        <button class="order-btn" data-restaurant="Crab Salad" data-image="https://source.unsplash.com/300x200/?crab-salad" data-recipe="Fresh crab salad with avocado">Order Now</button>
+      </div>
+    </div>
+
+    <div class="restaurant-card desserts">
+      <img src="https://source.unsplash.com/300x200/?donuts" alt="Donuts">
+      <div class="details">
+        <h3>Donuts</h3>
+        <p>Donuts</p>
+        <span class="rating">★★★★★ (180)</span>
+        <button class="order-btn" data-restaurant="Donuts" data-image="https://source.unsplash.com/300x200/?donuts" data-recipe="Sweet and fluffy donuts with various toppings">Order Now</button>
+      </div>
+    </div>
+
+    <div class="restaurant-card desserts">
+      <img src="https://source.unsplash.com/300x200/?cookies" alt="Cookies">
+      <div class="details">
+        <h3>Cookies</h3>
+        <p>Cookies</p>
+        <span class="rating">★★★★★ (180)</span>
+        <button class="order-btn" data-restaurant="Cookies" data-image="https://source.unsplash.com/300x200/?cookies" data-recipe="Freshly baked cookies with chocolate chips">Order Now</button>
+      </div>
+    </div>
+
+    <div class="restaurant-card desserts">
+      <img src="https://source.unsplash.com/300x200/?cake" alt="Lazy Cake">
+      <div class="details">
+        <h3>Lazy Cake</h3>
+        <p>Lazy Cake</p>
+        <span class="rating">★★★★★ (180)</span>
+        <button class="order-btn" data-restaurant="Lazy Cake" data-image="https://source.unsplash.com/300x200/?cake" data-recipe="Easy-to-make chocolatey lazy cake">Order Now</button>
+      </div>
+    </div>
+
+    <div class="restaurant-card desserts">
+      <img src="https://source.unsplash.com/300x200/?brownies" alt="Brownies">
+      <div class="details">
+        <h3>Brownies</h3>
+        <p>Brownies</p>
+        <span class="rating">★★★★★ (180)</span>
+        <button class="order-btn" data-restaurant="Brownies" data-image="https://source.unsplash.com/300x200/?brownies" data-recipe="Rich chocolate brownies with fudgy center">Order Now</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2024 Foodie | All rights reserved</p>
+  </footer>
+
+  <div id="orderModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn">&times;</span>
+      <img id="modalImage" src="" alt="Restaurant Image">
+      <h2 id="modalTitle">Restaurant Name</h2>
+      <p id="modalRecipe">Recipe Description</p>
+      <div class="quantity">
+        <label for="quantity">Quantity:</label>
+        <div class="quantity-controls">
+          <button id="decreaseBtn">-</button>
+          <input type="number" id="quantity" value="1" min="1" max="10">
+          <button id="increaseBtn">+</button>
+        </div>
+      </div>
+      <button id="orderNowBtn">Order Now</button>
+    </div>
+  </div>
+  
+  <script>
+    // Filter cuisine function
+    function filterCuisine(cuisine) {
+      const cards = document.querySelectorAll('.restaurant-card');
+      
+      if (cuisine === 'all') {
+        cards.forEach(card => {
+          card.style.display = 'block';
+        });
+        return;
+      }
+      
+      cards.forEach(card => {
+        if (card.classList.contains(cuisine)) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // Show all cards initially
+    document.addEventListener('DOMContentLoaded', function() {
+      filterCuisine('all');
+    });
+
+    // Modal functionality
+    const modal = document.getElementById("orderModal");
+    const closeModal = document.querySelector(".close-btn");
+    const orderBtns = document.querySelectorAll(".order-btn");
+    const decreaseBtn = document.getElementById('decreaseBtn');
+    const increaseBtn = document.getElementById('increaseBtn');
+    const quantityInput = document.getElementById('quantity');
+    const orderNowBtn = document.getElementById('orderNowBtn');
+
+    orderBtns.forEach(btn => {
+      btn.addEventListener("click", function() {
+        const restaurant = this.dataset.restaurant;
+        const image = this.dataset.image;
+        const recipe = this.dataset.recipe;
+
+        document.getElementById("modalTitle").textContent = restaurant;
+        document.getElementById("modalImage").src = image;
+        document.getElementById("modalRecipe").textContent = recipe;
+        quantityInput.value = 1;
+
+        modal.style.display = "flex";
+      });
+    });
+
+    closeModal.addEventListener("click", function() {
+      modal.style.display = "none";
+    });
+
+    window.addEventListener("click", function(event) {
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    });
+
+    // Quantity controls
+    decreaseBtn.addEventListener('click', () => {
+      let currentQuantity = parseInt(quantityInput.value);
+      if (currentQuantity > 1) {
+        quantityInput.value = currentQuantity - 1;
+      }
+    });
+
+    increaseBtn.addEventListener('click', () => {
+      let currentQuantity = parseInt(quantityInput.value);
+      if (currentQuantity < 10) {
+        quantityInput.value = currentQuantity + 1;
+      }
+    });
+
+    // Order confirmation
+    orderNowBtn.addEventListener('click', () => {
+      const quantity = quantityInput.value;
+      const restaurant = document.getElementById("modalTitle").textContent;
+      alert(`Your order has been confirmed! You ordered ${quantity} item(s) from ${restaurant}.`);
+      modal.style.display = "none";
+    });
+  </script>
+</body>
+</html>
